@@ -33,26 +33,36 @@ def get_ape_info(apeID):
 	#YOUR CODE HERE 
 	owner = contract.functions.ownerOf(apeID).call() 
 	data['owner'] = owner 
+	
+	# token_uri = contract.functions.tokenURI(apeID).call()
+
+
+	# if token_uri.startswith("ipfs://"):
+	# 	ipfs_hash = token_uri.split("ipfs://")[1]
+	# 	ipfs_url = f"https://ipfs.io/ipfs/{ipfs_hash}"
+	# else:
+	# 	ipfs_url = token_uri
+
+	# response = requests.get(ipfs_url)
+	# metadata = response.json()
+
+	# data['image'] = metadata.get('image', "")
+	# attributes = metadata.get('attributes', [])
+	# for attribute in attributes:
+	# 	if attribute['trait_type'] == 'Eyes':
+	# 		data['eyes'] = attribute['value']
+	# 		break
 
 	token_uri = contract.functions.tokenURI(apeID).call()
-
-
-	if token_uri.startswith("ipfs://"):
-		ipfs_hash = token_uri.split("ipfs://")[1]
-		ipfs_url = f"https://ipfs.io/ipfs/{ipfs_hash}"
-	else:
-		ipfs_url = token_uri
+	ipfs_url = token_uri.replace("ipfs://", "https://ipfs.io/ipfs/") if token_uri.startswith("ipfs://") else token_uri
 
 	response = requests.get(ipfs_url)
 	metadata = response.json()
 
 	data['image'] = metadata.get('image', "")
-	attributes = metadata.get('attributes', [])
-	for attribute in attributes:
-		if attribute['trait_type'] == 'Eyes':
-			data['eyes'] = attribute['value']
-			break
-
+	eyes_attribute = next((attr['value'] for attr in metadata.get('attributes', []) if attr['trait_type'] == 'Eyes'), "")
+	data['eyes'] = eyes_attribute
+	
 	assert isinstance(data,dict), f'get_ape_info{apeID} should return a dict' 
 	assert all( [a in data.keys() for a in ['owner','image','eyes']] ), f"return value should include the keys 'owner','image' and 'eyes'"
 	return data

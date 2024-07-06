@@ -64,14 +64,13 @@ import requests
 import json
 import time
 
-bayc_address = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D"
-
 ############################
 #Connect to an Ethereum node
 api_url = "https://mainnet.infura.io/v3/bfae8555ac6f497097223d4573f9c441" #YOU WILL NEED TO TO PROVIDE THE URL OF AN ETHEREUM NODE
 provider = HTTPProvider(api_url)
 web3 = Web3(provider)
 
+bayc_address = "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D"
 
 contract_address = Web3.toChecksumAddress(bayc_address)
 
@@ -121,4 +120,3 @@ def get_ape_info(apeID):
 	assert isinstance(data,dict), f'get_ape_info{apeID} should return a dict' 
 	assert all( [a in data.keys() for a in ['owner','image','eyes']] ), f"return value should include the keys 'owner','image' and 'eyes'"
 	return data
-
